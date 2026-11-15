@@ -29,7 +29,7 @@ echo.
 echo =====================================================================
 echo  SUCCESS: Application is running!
 echo  Open your web browser and navigate to:
-echo     http://localhost:8501
+echo     http://localhost:8502 (or http://localhost:%PORT% if configured)
 echo.
 echo  To view container logs:
 echo     docker compose logs -f

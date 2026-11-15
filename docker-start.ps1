@@ -27,7 +27,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 Write-Host "=====================================================================" -ForegroundColor Green
 Write-Host " SUCCESS: Application is running!" -ForegroundColor Green
-Write-Host " Open your browser to: http://localhost:8501" -ForegroundColor Green
+Write-Host " Open your browser to: http://localhost:8502" -ForegroundColor Green
 Write-Host ""
 Write-Host " Commands:" -ForegroundColor Gray
 Write-Host "   View logs:   docker compose logs -f" -ForegroundColor Gray

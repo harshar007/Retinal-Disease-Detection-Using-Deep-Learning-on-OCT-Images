@@ -23,7 +23,7 @@ docker compose up -d --build
 echo ""
 echo "====================================================================="
 echo " SUCCESS: Application is running!"
-echo " Open your browser to: http://localhost:8501"
+echo " Open your browser to: http://localhost:8502"
 echo ""
 echo " Useful commands:"
 echo "   View logs:   docker compose logs -f"

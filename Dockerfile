@@ -35,10 +35,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /app
 
-# Step 1: Install CPU-optimized PyTorch and TorchVision first.
-# This prevents downloading ~2.5GB of CUDA binaries, reducing image size from ~6GB to ~1.8GB
-# and drastically cutting container build time. (For GPU support, see DOCKER.md)
-RUN pip install --no-cache-dir torch>=2.0.0 torchvision>=0.15.0 --index-url https://download.pytorch.org/whl/cpu
+# Step 1: Upgrade packaging tools and install CPU-optimized PyTorch and TorchVision.
+# Using --extra-index-url allows pip to resolve general build tools (flit_core, etc.) from PyPI
+# while fetching lightweight CPU-only PyTorch wheels instead of 2.5GB CUDA packages.
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir torch torchvision --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Step 2: Install remaining application dependencies
 COPY requirements.txt .

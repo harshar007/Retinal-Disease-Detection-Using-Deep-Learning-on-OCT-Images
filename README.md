@@ -355,6 +355,27 @@ python run_pipeline.py
 streamlit run app.py
 ```
 
+### Option B: Interactive Jupyter Notebooks
+
+Launch Jupyter Notebook or JupyterLab to run the step-by-step interactive research notebooks:
+
+```bash
+# Launch the comprehensive end-to-end master notebook:
+jupyter notebook Retinal_Disease_Detection.ipynb
+
+# Or launch JupyterLab to explore modular notebooks in notebooks/ or src/:
+jupyter lab
+```
+
+Available Notebooks:
+- **`Retinal_Disease_Detection.ipynb`**: Complete end-to-end master pipeline (NumPy fundamentals, dataset loading, CNN & transfer models, training, evaluation, Grad-CAM, and PKL serialization).
+- **`notebooks/01_Dataset_Loading_and_EDA.ipynb`** (also in `src/`): Dataset ingestion, preprocessing, augmentation & EDA.
+- **`notebooks/02_Neural_Network_Fundamentals.ipynb`** (also in `src/`): Pure NumPy MLP with ReLU vs. Sigmoid vs. Tanh benchmarks.
+- **`notebooks/03_Model_Architectures.ipynb`** (also in `src/`): Custom CNN & 4 Transfer Learning model architectures.
+- **`notebooks/04_Training_and_Evaluation.ipynb`** (also in `src/`): Training loop with Early Stopping, AdamW, and test evaluation.
+- **`notebooks/05_GradCAM_Explainability.ipynb`** (also in `src/`): Explainable AI & biomarker localization with Grad-CAM.
+- **`notebooks/06_Model_Serialization_and_Inference.ipynb`** (also in `src/`): PKL model serialization and single-scan inference.
+
 ---
 
 ## 🐳 Docker Container Deployment
@@ -370,7 +391,7 @@ cd "retinal-oct-detection"
 # Start the application (CPU profile by default)
 docker compose up -d --build
 ```
-> Access the live application at: **`http://localhost:8501`**
+> Access the live application at: **`http://localhost:8502`** *(default host port, configurable via `PORT`)*
 
 ### NVIDIA GPU Acceleration Profile
 
@@ -393,6 +414,7 @@ docker compose -f docker-compose.gpu.yml up -d --build
 ```
 Retinal Disease Detection Using Deep Learning on OCT Images/
 │
+├── Retinal_Disease_Detection.ipynb    # Comprehensive End-to-End Master Jupyter Notebook
 ├── app.py                             # Interactive Streamlit Web Application
 ├── run_pipeline.py                    # End-to-end training & evaluation orchestrator
 ├── create_presentation.py             # Automated slide generation script
@@ -405,6 +427,15 @@ Retinal Disease Detection Using Deep Learning on OCT Images/
 ├── DOCUMENTATION.md                   # In-depth clinical & technical whitepaper
 ├── README.md                          # Visual repository presentation
 ├── requirements.txt                   # Verified Python environment dependencies
+│
+├── notebooks/                         # Standalone Jupyter Notebook Research Suite
+│   ├── Retinal_Disease_Detection_Complete.ipynb
+│   ├── 01_Dataset_Loading_and_EDA.ipynb
+│   ├── 02_Neural_Network_Fundamentals.ipynb
+│   ├── 03_Model_Architectures.ipynb
+│   ├── 04_Training_and_Evaluation.ipynb
+│   ├── 05_GradCAM_Explainability.ipynb
+│   └── 06_Model_Serialization_and_Inference.ipynb
 │
 ├── assets/
 │   └── sample_images/                 # Real clinical OCT B-scans (CNV, DME, Drusen, Normal)
@@ -429,7 +460,14 @@ Retinal Disease Detection Using Deep Learning on OCT Images/
 │   ├── gradcam_examples.png           # 4x3 Grad-CAM explainability gallery
 │   └── model_benchmark_results.csv    # Benchmark metric evaluation CSV
 │
-└── src/                               # Modular engineering package
+└── src/                               # Modular engineering package & Jupyter Notebooks
+    ├── Retinal_Disease_Detection_Pipeline.ipynb  # Self-contained pipeline notebook
+    ├── 01_Dataset_Loading_and_EDA.ipynb
+    ├── 02_Neural_Network_Fundamentals.ipynb
+    ├── 03_Model_Architectures.ipynb
+    ├── 04_Training_and_Evaluation.ipynb
+    ├── 05_GradCAM_Explainability.ipynb
+    ├── 06_Model_Serialization_and_Inference.ipynb
     ├── __init__.py                    # Module export definitions
     ├── dataset.py                     # Hugging Face loader, preprocessing & transforms
     ├── nn_fundamentals.py             # Pure NumPy MLP & activation benchmark

@@ -9,7 +9,7 @@ Automated Classification & Explainable AI for Ophthalmic Optical Coherence Tomog
 This repository includes a production-grade containerization setup for running the **Retinal Disease Detection Streamlit Web Application** and the **Training & Evaluation Pipeline** in isolated, reproducible Docker environments.
 
 ### Key Container Features
-- **Lightweight & Fast**: Uses `python:3.10-slim-bullseye` with CPU-optimized PyTorch wheels (`--index-url https://download.pytorch.org/whl/cpu`), cutting the image size from ~6.5 GB down to ~1.8 GB and building in minutes.
+- **Lightweight & Fast**: Uses `python:3.10-slim-bookworm` with CPU-optimized PyTorch wheels (`--extra-index-url https://download.pytorch.org/whl/cpu`), cutting the image size from ~6.5 GB down to ~1.8 GB and building in minutes.
 - **Security Best Practices**: Runs under an unprivileged user (`appuser`, UID 1000) instead of `root`.
 - **Pre-packaged & Ready-to-Run**: Includes serialized models (`models/*.pkl`), clinical evaluation assets, and diagnostic benchmark reports.
 - **Dynamic Volume Mounting**: Mounts local `./models`, `./assets`, and `./outputs` directories for instant model switching without rebuilding images.
@@ -44,8 +44,9 @@ docker compose up -d --build
 ### 2. Access the Application
 Open your web browser and navigate to:
 ```
-http://localhost:8501
+http://localhost:8502
 ```
+*(Default host port is `8502` to avoid collisions with other running services. To customize, set `PORT=8501 docker compose up -d`)*
 
 ### 3. Check Container Status & Health
 ```bash
