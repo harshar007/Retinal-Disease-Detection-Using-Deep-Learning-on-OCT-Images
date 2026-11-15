@@ -402,3 +402,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# ==============================================================================
+# Serverless Platform Compatibility Entrypoints (Vercel / WSGI / ASGI)
+# ==============================================================================
+def handler(request=None, *args, **kwargs):
+    """Fallback HTTP handler for serverless platform compatibility."""
+    return {
+        "statusCode": 200,
+        "headers": {"Content-Type": "text/html; charset=utf-8"},
+        "body": "<h1>Retinal Disease Detection OCT AI</h1><p>Running Streamlit Application.</p>"
+    }
+
+app = handler
+application = handler
