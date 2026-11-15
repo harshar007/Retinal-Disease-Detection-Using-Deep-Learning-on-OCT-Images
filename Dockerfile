@@ -3,7 +3,7 @@
 # Automated Classification & Explainable AI for Ophthalmic OCT B-scans
 # ==============================================================================
 
-FROM python:3.10-slim-bullseye
+FROM python:3.10-slim-bookworm
 
 # Metadata
 LABEL maintainer="Retinal OCT AI Research Team" \
@@ -42,7 +42,7 @@ RUN pip install --no-cache-dir torch>=2.0.0 torchvision>=0.15.0 --index-url http
 
 # Step 2: Install remaining application dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Step 3: Create dedicated non-root user for security best practices
 RUN groupadd -r appuser && useradd -r -g appuser -u 1000 -m -s /bin/bash appuser
