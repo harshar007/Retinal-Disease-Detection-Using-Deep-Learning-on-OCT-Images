@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retinal Disease Detection Using Deep Learning on OCT Images | AI Showcase</title>
+  <meta name="description" content="Automated multi-class classification and Explainable AI (Grad-CAM) for Ophthalmic Optical Coherence Tomography (OCT) B-scans.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-light: #EFF6FF;
+      --accent: #0284C7;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --purple: #8B5CF6;
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --card-border: #334155;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --code-bg: #0B1120;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--card-bg);
+      border-color: #64748B;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 5rem 0 3rem;
+      text-align: center;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      color: #60A5FA;
+      padding: 0.35rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 50%, #94A3B8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-badges img {
+      height: 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* Metric Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin: 3.5rem 0;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: #475569;
+    }
+
+    .stat-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Sections */
+    section {
+      padding: 4rem 0;
+      border-top: 1px solid rgba(51, 65, 85, 0.4);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* Pathology Cards */
+    .pathology-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .path-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .path-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .path-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .path-body {
+      padding: 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .path-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .path-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+    }
+
+    .status-cnv { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .status-dme { background: rgba(245, 158, 11, 0.2); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-drusen { background: rgba(139, 92, 246, 0.2); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.4); }
+    .status-normal { background: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+    .path-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .path-hallmark {
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-size: 0.82rem;
+      margin-top: auto;
+      border-left: 3px solid var(--primary);
+    }
+
+    /* Benchmark Table */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.6);
+      font-weight: 600;
+      color: #94A3B8;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Visual Previews */
+    .visual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .visual-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 1.25rem;
+    }
+
+    .visual-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .visual-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .visual-card img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+
+    /* Deployment Tabs / Code blocks */
+    .code-box {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #E2E8F0;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .code-comment { color: #64748B; }
+    .code-cmd { color: #60A5FA; }
+
+    /* Disclaimer */
+    .disclaimer {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 3rem 0;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .disclaimer-icon {
+      font-size: 1.5rem;
+    }
+
+    .disclaimer-text {
+      font-size: 0.9rem;
+      color: #FDE68A;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .visual-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="nav-brand">
+      <span>👁️</span> Retinal OCT AI
+    </a>
+    <div class="nav-links">
+      <a href="#pathology" class="nav-link">Pathologies</a>
+      <a href="#benchmarks" class="nav-link">Benchmarks</a>
+      <a href="#gradcam" class="nav-link">Explainable AI</a>
+      <a href="#deploy" class="nav-link">Run App</a>
+      <a href="https://github.com/harshar007/Retinal-Disease-Detection-Using-Deep-Learning-on-OCT-Images" target="_blank" class="btn btn-primary">
+        GitHub Repo ↗
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <div class="badge-pill">Clinical Decision Support & Explainable AI</div>
+      <h1>Retinal Disease Detection Using<br/>Deep Learning on OCT Images</h1>
+      <p>
+        An automated diagnostic screening and explainability system for multi-class classification of ophthalmic Optical Coherence Tomography (OCT) B-scans with real-time Grad-CAM biomarker localization.
+      </p>
+
+      <div class="hero-badges">
+        <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+        <img src="https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch">
+        <img src="https://img.shields.io/badge/Streamlit-1.25%2B-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit">
+        <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+        <img src="https://img.shields.io/badge/Top%20Accuracy-81.33%25-00C853?style=for-the-badge&logo=target&logoColor=white" alt="Accuracy">
+        <img src="https://img.shields.io/badge/XAI-Grad--CAM-FF007F?style=for-the-badge&logo=probot&logoColor=white" alt="XAI">
+      </div>
+
+      <div class="hero-actions">
+        <a href="#deploy" class="btn btn-primary">🚀 Launch & Deployment Guide</a>
+        <a href="https://github.com/harshar007/Retinal-Disease-Detection-Using-Deep-Learning-on-OCT-Images" target="_blank" class="btn btn-outline">
+          ⭐ Star on GitHub
+        </a>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" style="color: #10B981;">81.33%</div>
+          <div class="stat-label">Top Test Accuracy (VGG16)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color: #60A5FA;">4 Classes</div>
+          <div class="stat-label">CNV • DME • DRUSEN • NORMAL</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color: #C084FC;">5 Models</div>
+          <div class="stat-label">NumPy MLP + CNN + Pretrained</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color: #F472B6;">Grad-CAM</div>
+          <div class="stat-label">Biomarker Localization</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Clinical Pathology Section -->
+  <section id="pathology">
+    <div class="container">
+      <div class="section-header">
+        <h2>🩺 Clinical Pathology & Biomarkers</h2>
+        <p>Optical Coherence Tomography (OCT) allows micrometer-resolution visualization of distinct anatomical retinal layers and their pathological biomarkers.</p>
+      </div>
+
+      <div class="pathology-grid">
+        <!-- CNV -->
+        <div class="path-card">
+          <img src="img/CNV_sample_1.jpeg" alt="CNV OCT Sample">
+          <div class="path-body">
+            <div class="path-header">
+              <span class="path-title">CNV</span>
+              <span class="status-pill status-cnv">🔴 Urgent</span>
+            </div>
+            <p class="path-desc">
+              <strong>Choroidal Neovascularization</strong>: Pathological new blood vessel proliferation penetrating the Bruch's membrane into the sub-RPE space.
+            </p>
+            <div class="path-hallmark">
+              <strong>Hallmarks:</strong> Subretinal fluid (SRF) accumulation, hyperreflective fibrovascular membrane, RPE elevation.
+            </div>
+          </div>
+        </div>
+
+        <!-- DME -->
+        <div class="path-card">
+          <img src="img/DME_sample_1.jpeg" alt="DME OCT Sample">
+          <div class="path-body">
+            <div class="path-header">
+              <span class="path-title">DME</span>
+              <span class="status-pill status-dme">🟠 Priority</span>
+            </div>
+            <p class="path-desc">
+              <strong>Diabetic Macular Edema</strong>: Retinal microvascular breakdown causing plasma extravasation and neurosensory thickening.
+            </p>
+            <div class="path-hallmark">
+              <strong>Hallmarks:</strong> Hyporeflective intraretinal cystoid fluid bubbles, diffuse retinal thickening, loss of foveal depression.
+            </div>
+          </div>
+        </div>
+
+        <!-- DRUSEN -->
+        <div class="path-card">
+          <img src="img/DRUSEN_sample_1.jpeg" alt="Drusen OCT Sample">
+          <div class="path-body">
+            <div class="path-header">
+              <span class="path-title">DRUSEN</span>
+              <span class="status-pill status-drusen">🟣 Monitor</span>
+            </div>
+            <p class="path-desc">
+              <strong>Drusen Deposits</strong>: Extracellular lipid and proteinaceous deposits between the RPE basement membrane and Bruch's layer.
+            </p>
+            <div class="path-hallmark">
+              <strong>Hallmarks:</strong> Undulating, dome-shaped elevations of the hyperreflective RPE layer with preserved inner retina.
+            </div>
+          </div>
+        </div>
+
+        <!-- NORMAL -->
+        <div class="path-card">
+          <img src="img/NORMAL_sample_1.jpeg" alt="Normal OCT Sample">
+          <div class="path-body">
+            <div class="path-header">
+              <span class="path-title">NORMAL</span>
+              <span class="status-pill status-normal">🟢 Healthy</span>
+            </div>
+            <p class="path-desc">
+              <strong>Normal Retina</strong>: Healthy neurosensory retinal architecture with zero fluid accumulation or structural compromise.
+            </p>
+            <div class="path-hallmark">
+              <strong>Hallmarks:</strong> Intact symmetric foveal pit, distinct stratification (RNFL, GCL, IPL, INL, OPL, ONL, ELM, EZ, RPE).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benchmark Leaderboard -->
+  <section id="benchmarks">
+    <div class="container">
+      <div class="section-header">
+        <h2>📊 Diagnostic Model Leaderboard</h2>
+        <p>Evaluated on the independent Kermany2017 OCT test cohort (150 scans completely unseen during training and validation).</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Architecture</th>
+              <th>Test Accuracy</th>
+              <th>Precision (Macro)</th>
+              <th>Recall (Macro)</th>
+              <th>F1-Score (Macro)</th>
+              <th>Misclassified</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🥇</td>
+              <td><strong>VGG16 Transfer</strong></td>
+              <td style="color: #10B981; font-weight: 700;">81.33%</td>
+              <td>0.837</td>
+              <td>0.814</td>
+              <td>0.810</td>
+              <td>28 / 150</td>
+              <td><span class="status-pill status-normal">Best Model</span></td>
+            </tr>
+            <tr>
+              <td>🥈</td>
+              <td><strong>DenseNet121</strong></td>
+              <td style="font-weight: 600;">78.67%</td>
+              <td>0.828</td>
+              <td>0.787</td>
+              <td>0.783</td>
+              <td>32 / 150</td>
+              <td><span class="status-pill status-normal">Ready</span></td>
+            </tr>
+            <tr>
+              <td>🥉</td>
+              <td><strong>MobileNetV2</strong></td>
+              <td style="font-weight: 600;">76.00%</td>
+              <td>0.784</td>
+              <td>0.761</td>
+              <td>0.757</td>
+              <td>36 / 150</td>
+              <td><span class="status-pill status-normal">Edge Optimized</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>ResNet18</strong></td>
+              <td>72.00%</td>
+              <td>0.724</td>
+              <td>0.720</td>
+              <td>0.720</td>
+              <td>42 / 150</td>
+              <td><span class="status-pill status-normal">Ready</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Custom CNN (Scratch)</strong></td>
+              <td>65.33%</td>
+              <td>0.687</td>
+              <td>0.656</td>
+              <td>0.622</td>
+              <td>52 / 150</td>
+              <td><span class="status-pill status-normal">Baseline</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Comparison Metrics & Confusion Matrix -->
+      <div class="visual-grid">
+        <div class="visual-card">
+          <h3>Grouped Metric Benchmark Comparison</h3>
+          <p>Multi-metric comparative analysis across Accuracy, Precision, Recall, and F1-score.</p>
+          <img src="img/model_comparison_metrics.png" alt="Model Comparison Metrics">
+        </div>
+        <div class="visual-card">
+          <h3>Test Confusion Matrix Grid</h3>
+          <p>Classification error distributions across all 5 architectures on 150 unseen OCT test scans.</p>
+          <img src="img/confusion_matrices.png" alt="Confusion Matrices">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grad-CAM Explainability -->
+  <section id="gradcam">
+    <div class="container">
+      <div class="section-header">
+        <h2>🔬 Explainable AI with Grad-CAM</h2>
+        <p>Eliminating black-box ambiguity by visualizing the exact spatial regions and anatomical layers driving diagnostic predictions.</p>
+      </div>
+
+      <div class="visual-card" style="max-width: 900px; margin: 0 auto;">
+        <h3>Clinical Biomarker Localization Gallery</h3>
+        <p>4×3 matrix comparing original OCT B-scans (left), Grad-CAM activation heatmaps (center), and pathological overlay fusions (right).</p>
+        <img src="img/gradcam_examples.png" alt="Grad-CAM Gallery">
+      </div>
+    </div>
+  </section>
+
+  <!-- Deployment Guide -->
+  <section id="deploy">
+    <div class="container">
+      <div class="section-header">
+        <h2>🚀 Launch the Full Interactive Streamlit Dashboard</h2>
+        <p>The interactive diagnostic application runs natively on Docker, Streamlit Community Cloud, or your local Python environment.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+        <!-- Docker -->
+        <div class="stat-card" style="text-align: left;">
+          <h3 style="margin-bottom: 0.5rem;">🐳 Option 1: Docker (1-Command)</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Run the containerized app with zero Python setup. All models and assets are pre-configured:
+          </p>
+          <div class="code-box">
+            <span class="code-comment"># Build and launch with Docker Compose</span><br/>
+            <span class="code-cmd">docker compose up -d</span><br/><br/>
+            <span class="code-comment"># Open browser at:</span><br/>
+            <span class="code-cmd">http://localhost:8502</span>
+          </div>
+        </div>
+
+        <!-- Local Python -->
+        <div class="stat-card" style="text-align: left;">
+          <h3 style="margin-bottom: 0.5rem;">🐍 Option 2: Local Python</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Run natively in your local Python 3.10+ virtual environment:
+          </p>
+          <div class="code-box">
+            <span class="code-comment"># Install dependencies</span><br/>
+            <span class="code-cmd">pip install -r requirements.txt</span><br/><br/>
+            <span class="code-comment"># Start the Streamlit application</span><br/>
+            <span class="code-cmd">streamlit run app.py</span>
+          </div>
+        </div>
+
+        <!-- Streamlit Cloud -->
+        <div class="stat-card" style="text-align: left;">
+          <h3 style="margin-bottom: 0.5rem;">☁️ Option 3: Streamlit Community Cloud</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Free, 1-click cloud deployment with full PyTorch and GPU support:
+          </p>
+          <p style="font-size: 0.85rem; color: #CBD5E1; margin-bottom: 1rem;">
+            1. Go to <a href="https://share.streamlit.io" target="_blank" style="color: #60A5FA;">share.streamlit.io</a><br/>
+            2. Connect your GitHub repo: <code style="background: #0B1120; padding: 2px 6px; border-radius: 4px;">harshar007/Retinal-Disease-Detection-Using-Deep-Learning-on-OCT-Images</code><br/>
+            3. Set Main file path: <code style="background: #0B1120; padding: 2px 6px; border-radius: 4px;">app.py</code><br/>
+            4. Click <strong>Deploy</strong>!
+          </p>
+          <a href="https://share.streamlit.io" target="_blank" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            Deploy on Streamlit Cloud ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Clinical Prototype Disclaimer -->
+      <div class="disclaimer">
+        <div class="disclaimer-icon">⚠️</div>
+        <div class="disclaimer-text">
+          <strong>Mandatory Clinical Research Prototype Notice:</strong> This software is an academic demonstration and computer vision research prototype. It is <strong>NOT</strong> an FDA/CE-cleared Software as a Medical Device (SaMD) and must never be used as a primary diagnostic instrument or substitute for licensed clinical ophthalmological examination.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>
+        <strong>Retinal Disease Detection Using Deep Learning on OCT Images</strong><br/>
+        Engineered with PyTorch, Streamlit, and Explainable AI (Grad-CAM).<br/>
+        Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
