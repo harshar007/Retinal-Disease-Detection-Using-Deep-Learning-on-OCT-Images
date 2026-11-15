@@ -1,0 +1,60 @@
+# ==============================================================================
+# .dockerignore for Retinal Disease Detection OCT
+# Prevents bloat and keeps Docker build context lightweight and fast
+# ==============================================================================
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Python cache & compiled files
+__pycache__
+*/**/__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.env
+.venv
+venv/
+env/
+ENV/
+build/
+dist/
+
+# Large training datasets & local data splits (empty locally or Hugging Face cache)
+data/
+*.h5
+*.hdf5
+
+# Raw PyTorch checkpoints (.pt)
+# By default, app.py uses serialized packages (models/*.pkl).
+# Excluding .pt files saves ~1.15 GB of build context size.
+# (Comment out the line below if you wish to bake raw .pt files directly into the image)
+models/*.pt
+
+# Presentation files and generation scripts (not needed inside container)
+*.pptx
+*.pdf
+create_presentation.py
+
+# IDE & system metadata
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Testing and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and scratch scripts
+*.log
+scratch/

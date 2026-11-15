@@ -1,0 +1,24 @@
+# ==============================================================================
+# Docker Compose GPU Override Configuration
+# Usage: docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+# Requirements: NVIDIA GPU + NVIDIA Container Toolkit installed on host
+# ==============================================================================
+
+services:
+  retinal-oct-app:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  retinal-oct-train:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

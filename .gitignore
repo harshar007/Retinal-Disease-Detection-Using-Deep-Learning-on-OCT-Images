@@ -1,0 +1,49 @@
+# ==============================================================================
+# .gitignore for Retinal Disease Detection OCT
+# ==============================================================================
+
+# Python Byte-compiled / cache files
+__pycache__/
+*/__pycache__/
+*/**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Large Model Weights and Serialized Models (> 100MB exceeds GitHub limits)
+# Run `python run_pipeline.py` to train & serialize models locally
+models/*.pt
+models/*.pkl
+!models/README.md
+
+# Large datasets & cache
+data/
+*.h5
+*.hdf5
+*.parquet
+*.tar.gz
+*.zip
+
+# PyTorch checkpoints & logs
+checkpoints/
+runs/
+*.log
+
+# Presentation PDFs (if not intended for git)
+# Retinal Disease Detection Using Deep Learning on OCT Images.pdf
+
+# IDEs & System Metadata
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
